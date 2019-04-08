@@ -1,4 +1,8 @@
 
+# To do ==========
+# error handling
+
+# MAIN ===========
 
 # add leading zeros
 padz <- function(x, n=max(nchar(x)))gsub(" ", "0", formatC(x, width=n))
@@ -12,6 +16,30 @@ sfactor <- function(x)summary(as.factor(as.character(x)))
 # read all csv files in a folder and bind_rows
 read_all <- function(file.location){
   map_df(list.files(file.location, full.names = T), read.csv)
+}
+
+# wrap getCensus ===
+GetACS <- function(name,varlist,geotype, time = NULL, vintage = NULL){
+  if(geotype == "msa"){
+    region = "metropolitan statistical area/micropolitan statistical area:*"
+  } else if (geotype == "MSAs"){
+    region = "metropolitan statistical areas:*"
+  } else if (geotype == "MSA"){
+    region = "metropolitan statistical area:*"
+  } else if (geotype == "county"){
+    region = "county:*"
+  } else {
+    region = "state:*"
+  }
+
+  data <- getCensus(name = name,
+                    vintage = vintage,
+                    vars = varlist,
+                    region = region,
+                    time = time,
+                    key = Sys.getenv("CENSUS_API_KEY"))
+
+  return(data)
 }
 
 
