@@ -23,10 +23,16 @@ bbplot <- function(...){
 
 # Palette main colors
 metro.styles <- c(
-  `salmon` = "#F16876",
-  `light_blue`= "#00A7E6",
-  `light_grey` = "#E8ECF8",
-  `brown`  = "#796C68")
+  # `salmon` = "#F16876",
+  # `light_blue`= "#00A7E6",
+  # `light_grey` = "#E8ECF8",
+  # `brown`  = "#796C68",
+  `M.sea` = "#003249",
+  `M.grey` = "#767171",
+  `M.sky` = "#0070c0",
+  `M.sun` = "#ffc000",
+  `M.beach` = "#ff6966",
+  `M.bg` = "#D9D9D9")
 
 # Fn to extract them by hex codes
 styles <- function(...) {
@@ -40,9 +46,9 @@ styles <- function(...) {
 
 # Create separate palettes
 metro.palettes <- list(
-  `main`  = styles('salmon','light_blue', 'brown', 'light_grey'),
+  `main`  = styles('M.sky','M.sun', 'M.grey', 'M.beach'),
 
-  `cool`  = styles('light_blue', 'light_grey')
+  `cool`  = styles('M.sky', 'M.sun')
 )
 
 # Fn to access them
