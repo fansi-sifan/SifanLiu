@@ -13,12 +13,13 @@ na.share <- function(x)(sum(is.na(x))/length(x))
 # quickly summarize factor levels
 sfactor <- function(x)summary(as.factor(as.character(x)))
 
-# read all csv files in a folder and bind_rows
+# read all csv files in specified folder and bind_rows
 read_all <- function(file.location){
   map_df(list.files(file.location, full.names = T), read.csv)
 }
 
-# wrap getCensus ===
+# Sat Apr 13 04:07:09 2019 ------------------------------
+# wrap getcensus::getacs to simplify metro geography
 GetACS <- function(name,varlist,geotype, time = NULL, vintage = NULL){
   if(geotype == "msa"){
     region = "metropolitan statistical area/micropolitan statistical area:*"
