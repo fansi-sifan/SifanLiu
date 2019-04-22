@@ -1,7 +1,7 @@
 # Author: Sifan Liu
 # Date: Mon Apr 22 12:02:06 2019
 # --------------
-pkgs <- c('tidyverse',"tidycensus", "readxl","httr")
+pkgs <- c('tidyverse',"tidycensus", "censusapi","readxl","httr")
 
 check <- sapply(pkgs,require,warn.conflicts = TRUE,character.only = TRUE)
 if(any(!check)){
@@ -10,23 +10,51 @@ if(any(!check)){
     check <- sapply(pkgs.missing,require,warn.conflicts = TRUE,character.only = TRUE)
   }
 
-# download msa delination files from census ------------------------------
+# update delinations, population and employment from census ------------------------------
 # url <- "https://www2.census.gov/programs-surveys/metro-micro/geographies/reference-files/2018/delineation-files/list1_Sep_2018.xls"
+# cbp_year <- 2016
+# acs_year <- 2017
 
-update.county_cbsa_st <- function(url){
+key <- Sys.getenv("CENSUS_API_KEY")
+
+update.county_cbsa_st <- function(url, cbp_year, acs_year){
   # get latest 5 year population estimates from acs
-  Sys.getenv("CENSUS_API_KEY")
-  get_state_pop <- get_acs("state",variables = "B01003_001")
-  get_county_pop <- map_df(fips_codes$state_code, function(x){
-    get_acs(geography = "county", variables = "B01003_001",state = x)
-  })
+
+  # county_pop <- map_df(fips_codes$state_code, function(x){
+  #   get_acs(geography = "county", variables = "B01003_001",state = x)
+  # })
+  county_pop <- getCensus(name = "acs/acs5",
+                          vintage = acs_year,
+                          vars = c("NAME","B01003_001E"),
+                          region = "county:*",
+                          key = key)%>%
+    filter(state != "72")
+
+
+  county_emp <- getCensus(name = "cbp",
+                          vintage = cbp_year,
+                          vars = c("EMP", "GEO_TTL"),
+                          region = "county:*",
+                          key = key)%>%
+    mutate(EMP = as.numeric(EMP),
+           # fix two county name changes
+           county = case_when(
+             GEO_TTL == "Shannon County, South Dakota" ~ "102",
+             GEO_TTL == "Wade Hampton Census Area, Alaska" ~ "158",
+             TRUE ~ county
+           ))
 
   # download and read xls file
   msa2county <- readxl_online(url,skip=2)
-  county <- totalpop %>% left_join(msa2county %>%
-                                     mutate(GEOID = paste0(padz(`FIPS State Code`,2),
-                                                           padz(`FIPS County Code`,3))),
-                                   by = "GEOID")
+
+  # merge three files
+  county <- county_pop %>%
+    left_join(county_emp,by = c("state","county"))%>%
+   mutate(GEOID = paste0(padz(state,2),padz(county,3)))%>%
+    left_join(msa2county %>%
+                mutate(GEOID = paste0(padz(`FIPS State Code`,2),
+                                      padz(`FIPS County Code`,3))),
+              by = "GEOID")
 
   # create master relation file
   county_cbsa_st <- county %>%
@@ -38,8 +66,9 @@ update.county_cbsa_st <- function(url){
       TRUE ~ "NA"
     ))%>%
     select(code.county = GEOID,
-           name.county = NAME,
-           population.county = estimate,
+           name.county = GEO_TTL,
+           population.county = B01003_001E,
+           employment.county = EMP,
            code.cbsa = `CBSA Code`,
            name.cbsa = `CBSA Title`,
            type.cbsa)%>%
@@ -48,9 +77,11 @@ update.county_cbsa_st <- function(url){
            name.state = gsub(".+\\, ","",name.county))%>%
     # Construct population sum from county
     group_by(code.cbsa)%>%
-    mutate(population.cbsa = sum(population.county))%>%
+    mutate(population.cbsa = sum(population.county),
+           employment.cbsa = sum(employment.county))%>%
     group_by(code.state)%>%
-    mutate(population.state = sum(population.county))%>%
+    mutate(population.state = sum(population.county),
+           employment.state = sum(employment.county))%>%
     ungroup()
 
   # rank cbsa by population
@@ -65,6 +96,3 @@ update.county_cbsa_st <- function(url){
   save(county_cbsa_st,file = "data/county_cbsa_st.RData")
   save(metro100, file = "data/metro100.RData")
 }
-
-
-
