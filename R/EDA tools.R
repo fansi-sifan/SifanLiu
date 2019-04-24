@@ -20,8 +20,8 @@ read_all <- function(file.location){
 
 # Sat Apr 13 04:07:09 2019 ------------------------------
 # wrap getcensus::getacs to simplify metro geography
-GetACS <- function(name,varlist,geotype, time = NULL, vintage = NULL){
-  if(geotype == "msa"){
+get_msaCensus <- function(name,varlist,geotype, time = NULL, vintage = NULL){
+  if(geotype == "acsMSA"){
     region = "metropolitan statistical area/micropolitan statistical area:*"
   } else if (geotype == "MSAs"){
     region = "metropolitan statistical areas:*"
