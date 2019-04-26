@@ -145,3 +145,5 @@ update.place2county <- function(filepath){
 
 }
 
+# principle cities
+url <- "https://www2.census.gov/programs-surveys/metro-micro/geographies/reference-files/2018/delineation-files/list2_Sep_2018.xls"

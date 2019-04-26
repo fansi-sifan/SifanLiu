@@ -12,8 +12,8 @@ get_metro100 <- function(){
 get_metrosize <- function(){
   county_cbsa_st %>%
 
-    # filter(type.cbsa=="metro") %>%
-    # Should non-metros included here?
+    # filter(type.cbsa=="metro") %>% # Should non-metros included here?
+
     select(code.cbsa, name.cbsa, population.cbsa) %>%
     unique()%>%
     mutate(size.cbsa = case_when(

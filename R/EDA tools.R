@@ -1,16 +1,17 @@
 
 # To do ==========
 # error handling
+#
 
 # MAIN ===========
 
-# add leading zeros
+# add leading zeros to fill specified digits
 padz <- function(x, n=max(nchar(x)))gsub(" ", "0", formatC(x, width=n))
 
 # Share of NA values
 na.share <- function(x)(sum(is.na(x))/length(x))
 
-# quickly summarize factor levels
+# Summarize as factor levels
 sfactor <- function(x)summary(as.factor(as.character(x)))
 
 # read all csv files in specified folder and bind_rows
@@ -18,32 +19,7 @@ read_all <- function(file.location){
   map_df(list.files(file.location, full.names = T), read.csv)
 }
 
-# Sat Apr 13 04:07:09 2019 ------------------------------
-# wrap getcensus::getacs to simplify metro geography
-get_msaCensus <- function(name,varlist,geotype, time = NULL, vintage = NULL){
-  if(geotype == "acsMSA"){
-    region = "metropolitan statistical area/micropolitan statistical area:*"
-  } else if (geotype == "MSAs"){
-    region = "metropolitan statistical areas:*"
-  } else if (geotype == "MSA"){
-    region = "metropolitan statistical area:*"
-  } else if (geotype == "county"){
-    region = "county:*"
-  } else {
-    region = "state:*"
-  }
-
-  data <- getCensus(name = name,
-                    vintage = vintage,
-                    vars = varlist,
-                    region = region,
-                    time = time,
-                    key = Sys.getenv("CENSUS_API_KEY"))
-
-  return(data)
-}
-
-
+# read excel files from url
 readxl_online <- function(url, type = NULL, ...) {
   test <- stringr::str_detect(url, "[.]xls|[.]zip")
   if (test == FALSE) {
@@ -75,3 +51,28 @@ readxl_online <- function(url, type = NULL, ...) {
   df <- readxl::read_excel(paste0("tmp", type),...)
 
 }
+
+# [Depreciated]wrap getcensus::getacs to simplify metro geography
+# get_msaCensus <- function(name,varlist,geotype, time = NULL, vintage = NULL){
+#   if(geotype == "acsMSA"){
+#     region = "metropolitan statistical area/micropolitan statistical area:*"
+#   } else if (geotype == "MSAs"){
+#     region = "metropolitan statistical areas:*"
+#   } else if (geotype == "MSA"){
+#     region = "metropolitan statistical area:*"
+#   } else if (geotype == "county"){
+#     region = "county:*"
+#   } else {
+#     region = "state:*"
+#   }
+#
+#   data <- getCensus(name = name,
+#                     vintage = vintage,
+#                     vars = varlist,
+#                     region = region,
+#                     time = time,
+#                     key = Sys.getenv("CENSUS_API_KEY"))
+#
+#   return(data)
+# }
+
