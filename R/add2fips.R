@@ -1,6 +1,6 @@
 # Check required package --------------------------------------------------
 
-pkgs <- c('mapsapi',"xml2", "censusr")
+pkgs <- c('mapsapi',"xml2", "tigris")
 check <- sapply(pkgs,require,warn.conflicts = TRUE,character.only = TRUE)
 if(any(!check)){
   pkgs.missing <- pkgs[!check]
@@ -26,7 +26,7 @@ add2FIPS <- function (add,KEY){
       as.numeric
 
     # use census geolocator to get fips code from coordinates
-    FIPS <- censusr::call_geolocator_latlon(lat, lng)},
+    FIPS <- tigris::call_geolocator_latlon(lat, lng)},
     silent = TRUE)
 
   print(paste0(lat,",", lng))
