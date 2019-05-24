@@ -12,3 +12,4 @@ pl2co <- place2county  %>%
                            pl_label),
          st_name = state.name[match(st_ab,state.abb)])
 
+usethis::use_data(pl2co)
