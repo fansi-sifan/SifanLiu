@@ -43,4 +43,4 @@ add2FIPS <- function (add,KEY){
 #
 # add2FIPS("Garnet Valley, Pennsylvania", KEY)
 
-fips <- add2FIPS("Landenberg, Pennsylvania", KEY)
+
