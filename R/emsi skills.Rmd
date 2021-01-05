@@ -1,0 +1,42 @@
+---
+title: "EMSI Skills API"
+author: "Sifan Liu"
+date: "5/12/2020"
+output: html_document
+---
+
+```{python}
+import requests
+
+url = "https://auth.emsicloud.com/connect/token"
+
+payload = "client_id=a397xmzq9xhq5u83&client_secret=cRsKirM9&grant_type=client_credentials&scope=emsi_open"
+headers = {'content-type': 'application/x-www-form-urlencoded'}
+
+response = requests.request("POST", url, data=payload, headers=headers)
+
+print(response.text)
+```
+
+
+```{r setup, include=FALSE}
+
+# get all skills ----
+url <- "https://skills.emsicloud.com/versions/latest/skills"
+
+bearer_token <- "eyJhbGciOiJSUzI1NiIsImtpZCI6IkQ4NzM3ODcyNDdFRDFEQ0QxQTU5MkE4RDY4QUM0MUE5Q0U3MEZEQjYiLCJ0eXAiOiJKV1QiLCJ4NXQiOiIySE40Y2tmdEhjMGFXU3FOYUt4QnFjNXdfYlkifQ.eyJuYmYiOjE1ODkzMDQyNTksImV4cCI6MTU4OTMwNzg1OSwiaXNzIjoiaHR0cHM6Ly9hdXRoLmVtc2ljbG91ZC5jb20iLCJhdWQiOlsiaHR0cHM6Ly9hdXRoLmVtc2ljbG91ZC5jb20vcmVzb3VyY2VzIiwiZW1zaV9vcGVuIl0sImNsaWVudF9pZCI6ImEzOTd4bXpxOXhocTV1ODMiLCJlbWFpbCI6InNsaXVAYnJvb2tpbmdzLmVkdSIsImNvbXBhbnkiOiJCcm9va2luZ3MiLCJuYW1lIjoiU2lmYW4gTGl1Iiwic2NvcGUiOlsiZW1zaV9vcGVuIl19.BAoZbV3Z9gtZkHbr3x4ELs_K_9hzfEPDqMmIqQ6bE8GR5imNmDOM48OWkLwSk5NAzTvDyPWHV4gIwNh7XBBjLzr9BMF4xQQBf9FPRi1C5la6V6jkGhlRO54WmwmAm2IHXBZ4X-9tRYv1CeYWS2N0ufiHOEKY46X5-Da3oxXnesFeXPbdA8YW7ySlsLNsxfx0RxupUFU2oGhV84Xa2w8j_47EtjtvNGSW02lIRjBuwy-dDKMjazildBo3Iy2OnM45XFl4VHgRpXa5F2dAFpk__W2Zf1Zm0gE0SOKKijw61IbmleDGjKHea3i4K1qUyxQ1a0Y70--mlAEstaUo1WCBPQ"
+
+response <- GET(url = url, 
+                config = add_headers(Authorization = paste0("Bearer ", bearer_token)))
+
+emsi_skills <- content(response,as = "text")
+
+library(jsonlite)
+
+df <- fromJSON(emsi_skills)
+
+write.csv(df$skills, "../emsi_skills.csv")
+
+
+```
+
